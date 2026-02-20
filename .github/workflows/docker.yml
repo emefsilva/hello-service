@@ -2,7 +2,7 @@ name: CI-CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
 
@@ -34,24 +34,23 @@ jobs:
       - name: Push image
         run: docker push emesilva/hello-service:latest
 
+  deploy:
+    needs: build
+    runs-on: self-hosted
 
-deploy:
-  needs: build
-  runs-on: self-hosted
+    steps:
+      - name: Pull imagem
+        run: docker pull emesilva/hello-service:latest
 
-  steps:
-    - name: Pull imagem
-      run: docker pull emesilva/hello-service:latest
+      - name: Remove container antigo se existir
+        run: |
+          docker stop hello-service || true
+          docker rm hello-service || true
 
-    - name: Remove container antigo se existir
-      run: |
-        docker stop hello-service || true
-        docker rm hello-service || true
-
-    - name: Run container novo
-      run: |
-        docker run -d \
-          --name hello-service \
-          --restart=always \
-          -p 8081:8080 \
-          emesilva/hello-service:latest
+      - name: Run container novo
+        run: |
+          docker run -d \
+            --name hello-service \
+            --restart=always \
+            -p 8081:8080 \
+            emesilva/hello-service:latest
