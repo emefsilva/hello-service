@@ -1,0 +1,10 @@
+name: Test Runner
+
+on: push
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Teste simples
+        run: echo "RUNNER FUNCIONOU"

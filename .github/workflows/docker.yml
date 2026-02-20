@@ -34,19 +34,20 @@ jobs:
       - name: Push image
         run: docker push emesilva/hello-service:latest
 
+
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted   # ← AQUI é a mágica
 
     steps:
-      - name: Deploy no servidor
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            docker pull emesilva/hello-service:latest
-            docker stop hello-service || true
-            docker rm hello-service || true
-            docker run -d -p 8081:8080 --name hello-service emesilva/hello-service:latest
+      - name: Pull imagem
+        run: docker pull emesilva/hello-service:latest
+
+      - name: Stop container antigo
+        run: docker stop hello-service || true
+
+      - name: Remove container antigo
+        run: docker rm hello-service || true
+
+      - name: Run container novo
+        run: docker run -d -p 8081:8080 --name hello-service emesilva/hello-service:latest
