@@ -43,11 +43,15 @@ jobs:
       - name: Pull imagem
         run: docker pull emesilva/hello-service:latest
 
-      - name: Stop container antigo
-        run: docker stop hello-service || true
-
-      - name: Remove container antigo
-        run: docker rm hello-service || true
+      - name: Stop e Remove container antigo
+        run: |
+          docker stop hello-service || true
+          docker rm hello-service || true
 
       - name: Run container novo
-        run: docker run -d -p 8081:8080 --name hello-service emesilva/hello-service:latest
+        run: |
+          docker run -d --restart=always \
+            -p 8081:8080 \
+            --name hello-service \
+            emesilva/hello-service:latest
+        
